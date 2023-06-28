@@ -1,0 +1,568 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "profiling - http://localhost:20000/debug/pprof/",
+        "title": "Inference API Server",
+        "contact": {
+            "name": "Team ML",
+            "email": "TeamML@annotation-ai.com."
+        }
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "description": "It returns true if the api server is alive.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Healthcheck",
+                "responses": {
+                    "200": {
+                        "description": "API server's liveness",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "/infer": {
+            "post": {
+                "description": "It outputs a single bytes with a single bytes input.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Model inference api for the model with bytes a input and a bytes output.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "model name",
+                        "name": "modelName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "model version",
+                        "name": "modelVersion",
+                        "in": "query"
+                    },
+                    {
+                        "type": "file",
+                        "description": "input",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Triton server's inference response",
+                        "schema": {
+                            "$ref": "#/definitions/tritonserver.ModelInferResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/liveness": {
+            "get": {
+                "description": "It returns true if the triton server is alive.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Check Triton's liveness.",
+                "responses": {
+                    "200": {
+                        "description": "Triton server's liveness",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "/model-load": {
+            "post": {
+                "description": "It requests to load a model. This is only allowed when polling is enabled.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Load a model.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "model name",
+                        "name": "model_name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Triton server's model load response",
+                        "schema": {
+                            "$ref": "#/definitions/tritonserver.RepositoryModelLoadResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/model-metadata": {
+            "get": {
+                "description": "It returns the requested model metadata",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get model metadata.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "model name",
+                        "name": "model_name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "model version",
+                        "name": "model_version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Triton server's model metadata",
+                        "schema": {
+                            "$ref": "#/definitions/tritonserver.ModelMetadataResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/model-stats": {
+            "get": {
+                "description": "It returns the requested model's inference statistics.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get model inference statistics.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "model name",
+                        "name": "model_name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "model version",
+                        "name": "model_version",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Triton server's model statistics",
+                        "schema": {
+                            "$ref": "#/definitions/tritonserver.ModelStatisticsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/model-unload": {
+            "post": {
+                "description": "It requests to unload a model. This is only allowed when polling is enabled.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Unload a model.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "model name",
+                        "name": "model_name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Triton server's model unload response",
+                        "schema": {
+                            "$ref": "#/definitions/tritonserver.RepositoryModelUnloadResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/readiness": {
+            "get": {
+                "description": "It returns true if the triton server is ready.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Check Triton's Readiness.",
+                "responses": {
+                    "200": {
+                        "description": "Triton server's readiness",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "tritonserver.InferBatchStatistics": {
+            "type": "object",
+            "properties": {
+                "batch_size": {
+                    "description": "@@ .. cpp:var:: uint64 batch_size\n@@\n@@ The size of the batch.\n@@",
+                    "type": "integer"
+                },
+                "compute_infer": {
+                    "description": "@@ .. cpp:var:: StatisticDuration compute_infer\n@@\n@@ The count and cumulative duration to execute the model with the given\n@@ batch size.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "compute_input": {
+                    "description": "@@ .. cpp:var:: StatisticDuration compute_input\n@@\n@@ The count and cumulative duration to prepare input tensor data as\n@@ required by the model framework / backend with the given batch size.\n@@ For example, this duration should include the time to copy input\n@@ tensor data to the GPU.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "compute_output": {
+                    "description": "@@ .. cpp:var:: StatisticDuration compute_output\n@@\n@@ The count and cumulative duration to extract output tensor data\n@@ produced by the model framework / backend with the given batch size.\n@@ For example, this duration should include the time to copy output\n@@ tensor data from the GPU.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                }
+            }
+        },
+        "tritonserver.InferParameter": {
+            "type": "object",
+            "properties": {
+                "parameterChoice": {
+                    "description": "@@ .. cpp:var:: oneof parameter_choice\n@@\n@@ The parameter value can be a string, an int64 or\n@@ a boolean\n@@\n\nTypes that are assignable to ParameterChoice:\n\n\t*InferParameter_BoolParam\n\t*InferParameter_Int64Param\n\t*InferParameter_StringParam"
+                }
+            }
+        },
+        "tritonserver.InferStatistics": {
+            "type": "object",
+            "properties": {
+                "cache_hit": {
+                    "description": "@@ .. cpp:var:: StatisticDuration cache_hit\n@@\n@@ The count of response cache hits and cumulative duration to lookup\n@@ and extract output tensor data from the Response Cache on a cache\n@@ hit. For example, this duration should include the time to copy\n@@ output tensor data from the Response Cache to the response object.\n@@ On cache hits, triton does not need to go to the model/backend\n@@ for the output tensor data, so the \"compute_input\", \"compute_infer\",\n@@ and \"compute_output\" fields are not updated. Assuming the response\n@@ cache is enabled for a given model, a cache hit occurs for a\n@@ request to that model when the request metadata (model name,\n@@ model version, model inputs) hashes to an existing entry in the\n@@ cache. On a cache miss, the request hash and response output tensor\n@@ data is added to the cache. See response cache docs for more info:\n@@ https://github.com/triton-inference-server/server/blob/main/docs/response_cache.md\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "cache_miss": {
+                    "description": "@@ .. cpp:var:: StatisticDuration cache_miss\n@@\n@@ The count of response cache misses and cumulative duration to lookup\n@@ and insert output tensor data from the computed response to the cache.\n@@ For example, this duration should include the time to copy\n@@ output tensor data from the response object to the Response Cache.\n@@ Assuming the response cache is enabled for a given model, a cache\n@@ miss occurs for a request to that model when the request metadata\n@@ does NOT hash to an existing entry in the cache. See the response\n@@ cache docs for more info:\n@@ https://github.com/triton-inference-server/server/blob/main/docs/response_cache.md\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "compute_infer": {
+                    "description": "@@ .. cpp:var:: StatisticDuration compute_infer\n@@\n@@ The count and cumulative duration to execute the model.\n@@ The \"compute_infer\" count and cumulative duration do not account for\n@@ requests that were a cache hit. See the \"cache_hit\" field for more\n@@ info.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "compute_input": {
+                    "description": "@@ .. cpp:var:: StatisticDuration compute_input\n@@\n@@ The count and cumulative duration to prepare input tensor data as\n@@ required by the model framework / backend. For example, this duration\n@@ should include the time to copy input tensor data to the GPU.\n@@ The \"compute_input\" count and cumulative duration do not account for\n@@ requests that were a cache hit. See the \"cache_hit\" field for more\n@@ info.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "compute_output": {
+                    "description": "@@ .. cpp:var:: StatisticDuration compute_output\n@@\n@@ The count and cumulative duration to extract output tensor data\n@@ produced by the model framework / backend. For example, this duration\n@@ should include the time to copy output tensor data from the GPU.\n@@ The \"compute_output\" count and cumulative duration do not account for\n@@ requests that were a cache hit. See the \"cache_hit\" field for more\n@@ info.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "fail": {
+                    "description": "@@ .. cpp:var:: StatisticDuration fail\n@@\n@@ Cumulative count and duration for failed inference\n@@ request.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "queue": {
+                    "description": "@@ .. cpp:var:: StatisticDuration queue\n@@\n@@ The count and cumulative duration that inference requests wait in\n@@ scheduling or other queues. The \"queue\" count and cumulative\n@@ duration includes cache hits.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                },
+                "success": {
+                    "description": "@@ .. cpp:var:: StatisticDuration success\n@@\n@@ Cumulative count and duration for successful inference\n@@ request. The \"success\" count and cumulative duration includes\n@@ cache hits.\n@@",
+                    "$ref": "#/definitions/tritonserver.StatisticDuration"
+                }
+            }
+        },
+        "tritonserver.InferTensorContents": {
+            "type": "object",
+            "properties": {
+                "bool_contents": {
+                    "description": "@@\n@@ .. cpp:var:: bool bool_contents (repeated)\n@@\n@@ Representation for BOOL data type. The size must match what is\n@@ expected by the tensor's shape. The contents must be the flattened,\n@@ one-dimensional, row-major order of the tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "boolean"
+                    }
+                },
+                "bytes_contents": {
+                    "description": "@@\n@@ .. cpp:var:: bytes bytes_contents (repeated)\n@@\n@@ Representation for BYTES data type. The size must match what is\n@@ expected by the tensor's shape. The contents must be the flattened,\n@@ one-dimensional, row-major order of the tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "fp32_contents": {
+                    "description": "@@\n@@ .. cpp:var:: float fp32_contents (repeated)\n@@\n@@ Representation for FP32 data type. The size must match what is\n@@ expected by the tensor's shape. The contents must be the flattened,\n@@ one-dimensional, row-major order of the tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "fp64_contents": {
+                    "description": "@@\n@@ .. cpp:var:: double fp64_contents (repeated)\n@@\n@@ Representation for FP64 data type. The size must match what is\n@@ expected by the tensor's shape. The contents must be the flattened,\n@@ one-dimensional, row-major order of the tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "int64_contents": {
+                    "description": "@@\n@@ .. cpp:var:: int64 int64_contents (repeated)\n@@\n@@ Representation for INT64 data types. The size must match what\n@@ is expected by the tensor's shape. The contents must be the\n@@ flattened, one-dimensional, row-major order of the tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "int_contents": {
+                    "description": "@@\n@@ .. cpp:var:: int32 int_contents (repeated)\n@@\n@@ Representation for INT8, INT16, and INT32 data types. The size\n@@ must match what is expected by the tensor's shape. The contents\n@@ must be the flattened, one-dimensional, row-major order of the\n@@ tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "uint64_contents": {
+                    "description": "@@\n@@ .. cpp:var:: uint64 uint64_contents (repeated)\n@@\n@@ Representation for UINT64 data types. The size must match what\n@@ is expected by the tensor's shape. The contents must be the\n@@ flattened, one-dimensional, row-major order of the tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "uint_contents": {
+                    "description": "@@\n@@ .. cpp:var:: uint32 uint_contents (repeated)\n@@\n@@ Representation for UINT8, UINT16, and UINT32 data types. The size\n@@ must match what is expected by the tensor's shape. The contents\n@@ must be the flattened, one-dimensional, row-major order of the\n@@ tensor elements.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "tritonserver.ModelInferResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "@@ .. cpp:var:: string id\n@@\n@@ The id of the inference request if one was specified.\n@@",
+                    "type": "string"
+                },
+                "model_name": {
+                    "description": "@@ .. cpp:var:: string model_name\n@@\n@@ The name of the model used for inference.\n@@",
+                    "type": "string"
+                },
+                "model_version": {
+                    "description": "@@ .. cpp:var:: string model_version\n@@\n@@ The version of the model used for inference.\n@@",
+                    "type": "string"
+                },
+                "outputs": {
+                    "description": "@@\n@@ .. cpp:var:: InferOutputTensor outputs (repeated)\n@@\n@@ The output tensors holding inference results.\n@@",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tritonserver.ModelInferResponse_InferOutputTensor"
+                    }
+                },
+                "parameters": {
+                    "description": "@@ .. cpp:var:: map\u003cstring,InferParameter\u003e parameters\n@@\n@@ Optional inference response parameters.\n@@",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/tritonserver.InferParameter"
+                    }
+                },
+                "raw_output_contents": {
+                    "description": "@@\n@@ .. cpp:var:: bytes raw_output_contents\n@@\n@@ The data contained in an output tensor can be represented in\n@@ \"raw\" bytes form or in the repeated type that matches the\n@@ tensor's data type. Using the \"raw\" bytes form will\n@@ typically allow higher performance due to the way protobuf\n@@ allocation and reuse interacts with GRPC. For example, see\n@@ https://github.com/grpc/grpc/issues/23231.\n@@\n@@ To use the raw representation 'raw_output_contents' must be\n@@ initialized with data for each tensor in the same order as\n@@ 'outputs'. For each tensor, the size of this content must\n@@ match what is expected by the tensor's shape and data\n@@ type. The raw data must be the flattened, one-dimensional,\n@@ row-major order of the tensor elements without any stride\n@@ or padding between the elements. Note that the FP16 and BF16 data\n@@ types must be represented as raw content as there is no\n@@ specific data type for a 16-bit float type.\n@@\n@@ If this field is specified then InferOutputTensor::contents\n@@ must not be specified for any output tensor.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "tritonserver.ModelInferResponse_InferOutputTensor": {
+            "type": "object",
+            "properties": {
+                "contents": {
+                    "description": "@@ .. cpp:var:: InferTensorContents contents\n@@\n@@ The tensor contents using a data-type format. This field\n@@ must not be specified if tensor contents are being specified\n@@ in ModelInferResponse.raw_output_contents.\n@@",
+                    "$ref": "#/definitions/tritonserver.InferTensorContents"
+                },
+                "datatype": {
+                    "description": "@@\n@@ .. cpp:var:: string datatype\n@@\n@@ The tensor data type.\n@@",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "@@\n@@ .. cpp:var:: string name\n@@\n@@ The tensor name.\n@@",
+                    "type": "string"
+                },
+                "parameters": {
+                    "description": "@@ .. cpp:var:: map\u003cstring,InferParameter\u003e parameters\n@@\n@@ Optional output tensor parameters.\n@@",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/tritonserver.InferParameter"
+                    }
+                },
+                "shape": {
+                    "description": "@@\n@@ .. cpp:var:: int64 shape (repeated)\n@@\n@@ The tensor shape.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "tritonserver.ModelMetadataResponse": {
+            "type": "object",
+            "properties": {
+                "inputs": {
+                    "description": "@@\n@@ .. cpp:var:: TensorMetadata inputs (repeated)\n@@\n@@ The model's inputs.\n@@",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tritonserver.ModelMetadataResponse_TensorMetadata"
+                    }
+                },
+                "name": {
+                    "description": "@@\n@@ .. cpp:var:: string name\n@@\n@@ The model name.\n@@",
+                    "type": "string"
+                },
+                "outputs": {
+                    "description": "@@\n@@ .. cpp:var:: TensorMetadata outputs (repeated)\n@@\n@@ The model's outputs.\n@@",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tritonserver.ModelMetadataResponse_TensorMetadata"
+                    }
+                },
+                "platform": {
+                    "description": "@@\n@@ .. cpp:var:: string platform\n@@\n@@ The model's platform.\n@@",
+                    "type": "string"
+                },
+                "versions": {
+                    "description": "@@\n@@ .. cpp:var:: string versions (repeated)\n@@\n@@ The versions of the model.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "tritonserver.ModelMetadataResponse_TensorMetadata": {
+            "type": "object",
+            "properties": {
+                "datatype": {
+                    "description": "@@\n@@ .. cpp:var:: string datatype\n@@\n@@ The tensor data type.\n@@",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "@@\n@@ .. cpp:var:: string name\n@@\n@@ The tensor name.\n@@",
+                    "type": "string"
+                },
+                "shape": {
+                    "description": "@@\n@@ .. cpp:var:: int64 shape (repeated)\n@@\n@@ The tensor shape. A variable-size dimension is represented\n@@ by a -1 value.\n@@",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "tritonserver.ModelStatistics": {
+            "type": "object",
+            "properties": {
+                "batch_stats": {
+                    "description": "@@ .. cpp:var:: InferBatchStatistics batch_stats (repeated)\n@@\n@@ The aggregate statistics for each different batch size that is\n@@ executed in the model. The batch statistics indicate how many actual\n@@ model executions were performed and show differences due to different\n@@ batch size (for example, larger batches typically take longer to\n@@ compute).\n@@",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tritonserver.InferBatchStatistics"
+                    }
+                },
+                "execution_count": {
+                    "description": "@@ .. cpp:var:: uint64 last_inference\n@@\n@@ The cumulative count of the number of successful inference executions\n@@ performed for the model. When dynamic batching is enabled, a single\n@@ model execution can perform inferencing for more than one inference\n@@ request. For example, if a clients sends 64 individual requests each\n@@ with batch size 1 and the dynamic batcher batches them into a single\n@@ large batch for model execution then \"execution_count\" will be\n@@ incremented by 1. If, on the other hand, the dynamic batcher is not\n@@ enabled for that each of the 64 individual requests is executed\n@@ independently, then \"execution_count\" will be incremented by 64.\n@@ The \"execution_count\" value DOES NOT include cache hits.\n@@",
+                    "type": "integer"
+                },
+                "inference_count": {
+                    "description": "@@ .. cpp:var:: uint64 last_inference\n@@\n@@ The cumulative count of successful inference requests made for this\n@@ model. Each inference in a batched request is counted as an\n@@ individual inference. For example, if a client sends a single\n@@ inference request with batch size 64, \"inference_count\" will be\n@@ incremented by 64. Similarly, if a clients sends 64 individual\n@@ requests each with batch size 1, \"inference_count\" will be\n@@ incremented by 64. The \"inference_count\" value DOES NOT include\n@@ cache hits.\n@@",
+                    "type": "integer"
+                },
+                "inference_stats": {
+                    "description": "@@ .. cpp:var:: InferStatistics inference_stats\n@@\n@@ The aggregate statistics for the model/version.\n@@",
+                    "$ref": "#/definitions/tritonserver.InferStatistics"
+                },
+                "last_inference": {
+                    "description": "@@ .. cpp:var:: uint64 last_inference\n@@\n@@ The timestamp of the last inference request made for this model,\n@@ as milliseconds since the epoch.\n@@",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "@@ .. cpp:var:: string name\n@@\n@@ The name of the model. If not given returns statistics for all\n@@",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "@@ .. cpp:var:: string version\n@@\n@@ The version of the model.\n@@",
+                    "type": "string"
+                }
+            }
+        },
+        "tritonserver.ModelStatisticsResponse": {
+            "type": "object",
+            "properties": {
+                "model_stats": {
+                    "description": "@@ .. cpp:var:: ModelStatistics model_stats (repeated)\n@@\n@@ Statistics for each requested model.\n@@",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/tritonserver.ModelStatistics"
+                    }
+                }
+            }
+        },
+        "tritonserver.RepositoryModelLoadResponse": {
+            "type": "object"
+        },
+        "tritonserver.RepositoryModelUnloadResponse": {
+            "type": "object"
+        },
+        "tritonserver.StatisticDuration": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "@@ .. cpp:var:: uint64 count\n@@\n@@ Cumulative number of times this metric occurred.\n@@",
+                    "type": "integer"
+                },
+                "ns": {
+                    "description": "@@ .. cpp:var:: uint64 total_time_ns\n@@\n@@ Total collected duration of this metric in nanoseconds.\n@@",
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

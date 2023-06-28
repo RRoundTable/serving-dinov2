@@ -1,0 +1,5 @@
+numpy>=1.18.5
+torch>=1.7.0
+torchvision>=0.8.1
+scikit-learn==1.2.2
+gradio==3.35.2

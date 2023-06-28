@@ -6,8 +6,9 @@
 - [x] Golang API Code for dinov2.
 - [ ] Gradio Demo.
 - [ ] Docker Compose.
-- [ ] Loadtest
+- [ ] Loadtest with locust.
 - [ ] K8s Setting(Triton, Traefik, Promtail, Loki, Prometheus, Grafana).
 - [ ] Serving dinov2 onnx model with TensorRT.
 - [ ] Serving dinov2 onnx model with Fastertransformer.
+- [ ] CI/CD with github actions.
 

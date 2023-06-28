@@ -3,7 +3,7 @@
 ## Contents
 
 - [x] Serving dinov2 onnx model with triton. ([Artifact](https://huggingface.co/RoundtTble/dinov2_vits14_onnx))
-- [ ] Golang API Code for dinov2.
+- [x] Golang API Code for dinov2.
 - [ ] Gradio Demo.
 - [ ] Docker Compose.
 - [ ] Loadtest

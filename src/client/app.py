@@ -8,11 +8,21 @@ import torchvision.transforms as T
 from sklearn.decomposition import PCA
 import sklearn
 import numpy as np
+import aiohttp
+from PIL import Image
+import os
+import asyncio
+import cv2
+import tritonclient.grpc as grpcclient
 
 
 # Constants
-patch_h = 40
-patch_w = 40
+patch_h = 20
+patch_w = 20
+patch_size = 14
+
+INFERENCE_URL = os.environ.get("INFERENCE_URL", "localhost:20000/infer")
+triton_client = grpcclient.InferenceServerClient(url=INFERENCE_URL)
 
 # Use GPU if available
 if torch.cuda.is_available():
@@ -20,25 +30,48 @@ if torch.cuda.is_available():
 else:
     device = torch.device("cpu")
 
-# DINOV2
-model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitl14')
-
-# Trasnforms
-transform = T.Compose([
-    T.Resize((patch_h * 14, patch_w * 14)),
-    T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-])
-
-# Empty Tenosr
-imgs_tensor = torch.zeros(4, 3, patch_h * 14, patch_w * 14)
-
-
 # PCA
 pca = PCA(n_components=3)
+
 
 # Min-Max Scaler
 from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler(clip=True)
+
+
+def transforms(image: np.ndarray) -> np.ndarray:
+    resized_image = cv2.resize(image, (patch_h * patch_size, patch_w * patch_size))
+    normalized_image = (
+        resized_image - np.array([0.485, 0.456, 0.406])
+    ) / np.array([0.229, 0.224, 0.225])
+    normalized_image = normalized_image.astype("float32").transpose(2, 0, 1)
+
+    return np.expand_dims(normalized_image, 0)
+
+
+def request_inference(images: List[np.ndarray]) -> torch.Tensor:
+    inputs = []
+    for img in images:
+        inputs.append(transforms(img))
+    inputs = np.concatenate(inputs)
+    triton_inputs = [grpcclient.InferInput("input", inputs.shape, "FP32")]
+    triton_inputs[0].set_data_from_numpy(inputs)
+    triton_outputs = [grpcclient.InferRequestedOutput("output")]
+
+    params = {
+        "model_name": "dinov2_vitl14",
+        "model_version": "1",
+    }
+
+    result = triton_client.infer(
+        inputs=triton_inputs,
+        outputs=triton_outputs,
+        **params,
+    )
+    output = result.as_numpy("output")
+
+    return output
+
 
 def query_image(
     img1, img2, img3, img4,
@@ -48,19 +81,15 @@ def query_image(
 
     # Transform
     imgs = [img1, img2, img3, img4]
-    for i, img in enumerate(imgs):
-        img = np.transpose(img, (2, 0, 1)) / 255
-        imgs_tensor[i] = transform(torch.Tensor(img))
+    patch_features = request_inference(imgs)
 
-    # Get feature from patches
-    with torch.no_grad():
-        features_dict = model.forward_features(imgs_tensor)
-        features = features_dict['x_prenorm'][:, 1:]
+    patch_features = patch_features.reshape(len(imgs) * patch_h * patch_w, -1)
 
-    features = features.reshape(4 * patch_h * patch_w, -1)
     # PCA Feature
-    pca.fit(features)
-    pca_features = pca.transform(features)
+    pca.fit(patch_features)
+    pca_features = pca.transform(patch_features)
+
+    # Scaling
     scaler.fit(pca_features)
     pca_feature = scaler.transform(pca_features)
 
@@ -72,8 +101,8 @@ def query_image(
     pca_features_fg = ~pca_features_bg
 
     # PCA with only foreground
-    pca.fit(features[pca_features_fg])
-    pca_features_rem = pca.transform(features[pca_features_fg])
+    pca.fit(patch_features[pca_features_fg])
+    pca_features_rem = pca.transform(patch_features[pca_features_fg])
 
     # Min Max Normalization
     scaler.fit(pca_features_rem)
@@ -83,6 +112,7 @@ def query_image(
     pca_features_rgb[pca_features_bg] = 0
     pca_features_rgb[pca_features_fg] = pca_features_rem
     pca_features_rgb = pca_features_rgb.reshape(4, patch_h, patch_w, 3)
+        # Scaling
 
     return [pca_features_rgb[i] for i in range(4)]
 
@@ -104,7 +134,14 @@ Method:
 """
 demo = gr.Interface(
     query_image,
-    inputs=[gr.Image(), gr.Image(), gr.Image(), gr.Image(), gr.Slider(-1, 1, value=0.1), gr.Checkbox(label="foreground is larger than threshold", value=True) ],
+    inputs=[
+        gr.Image(),
+        gr.Image(),
+        gr.Image(),
+        gr.Image(),
+        gr.Slider(-1, 1, value=0.1),
+        gr.Checkbox(label="foreground is larger than threshold", value=True),
+    ],
     outputs=[gr.Image(), gr.Image(), gr.Image(), gr.Image()],
     title="DINOV2 PCA",
     description=description,

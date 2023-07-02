@@ -3,8 +3,8 @@
 ## Contents
 
 - [x] Serving dinov2 onnx model with triton. ([Artifact](https://huggingface.co/RoundtTble/dinov2_vits14_onnx))
-- [x] Golang API Code for dinov2.
-- [ ] Gradio Demo.
+- [ ] Golang API Code for dinov2. (Not Determined)
+- [x] Gradio Demo.
 - [ ] Docker Compose.
 - [ ] Loadtest with locust.
 - [ ] K8s Setting(Triton, Traefik, Promtail, Loki, Prometheus, Grafana).

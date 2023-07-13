@@ -1,4 +1,3 @@
-import torch
 import gradio as gr
 from typing import List
 from sklearn.decomposition import PCA
@@ -55,7 +54,7 @@ def transforms(image: np.ndarray) -> np.ndarray:
     return np.expand_dims(normalized_image, 0).astype("float32")
 
 
-def request_inference(images: List[np.ndarray]) -> torch.Tensor:
+def request_inference(images: List[np.ndarray]) -> np.ndarray:
     inputs = []
     for img in images:
         inputs.append(transforms(img))
@@ -142,4 +141,4 @@ if __name__ == "__main__":
             ["assets/9.png", "assets/10.png", "assets/11.png", "assets/12.png", 0.4, True],
         ]
     )
-    demo.launch()
+    demo.launch(server_name="0.0.0.0")

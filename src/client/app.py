@@ -29,7 +29,7 @@ Method:
 patch_h = 40
 patch_w = 40
 patch_size = 14
-INFERENCE_URL = os.environ.get("INFERENCE_URL", "localhost:20000/infer")
+INFERENCE_URL = os.environ.get("TRITON_SERVER_URL", "localhost:8001")
 
 # triton client
 triton_client = grpcclient.InferenceServerClient(url=INFERENCE_URL)

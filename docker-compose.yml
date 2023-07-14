@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  dinov2-client:
+    image: ghcr.io/rroundtable/dinov2-client:latest
+    container_name: dinov2-client
+    environment:
+      - TRITON_SERVER_URL=dinov2-server:8001
+    ports:
+      - 7860:7860
+    # restart: always
+
+  dinov2-server:
+    image: ghcr.io/rroundtable/dinov2-server-triton:23.04-py3
+    container_name: dinov2-server
+    command: tritonserver --model-repository=/models
+    volumes:
+      - ${PWD}/model_repository:/models
+    shm_size: 4gb
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+   # restart: always

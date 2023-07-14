@@ -4,6 +4,7 @@ services:
   dinov2-client:
     image: ghcr.io/rroundtable/dinov2-client:latest
     container_name: dinov2-client
+    build: src/client
     environment:
       - TRITON_SERVER_URL=dinov2-server:8001
     ports:

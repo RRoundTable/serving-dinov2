@@ -32,7 +32,7 @@ image:
   imageName: ghcr.io/rroundtable/dinov2-server-triton:23.04-py3
   pullPolicy: IfNotPresent
   numGpus: 1
-  modelRepositoryPath: /models
+  modelRepositoryPath: s3://minio:9000/model-repository/
   modelControlMode: poll # [none | explicit | poll]
 
 deployment:

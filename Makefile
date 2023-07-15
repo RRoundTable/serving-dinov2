@@ -5,6 +5,6 @@ model:
 	cp -r dinov2_vitl14_onnx/model_repository ./model_repository
 	rm -rf dinov2_vitl14_onnx
 
-minkube:
+minikube:
 	curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 	sudo install minikube-linux-amd64 /usr/local/bin/minikube

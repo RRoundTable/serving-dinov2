@@ -58,6 +58,23 @@ spec:
           image: "{{ .Values.image.imageName }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
 
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: triton-secret
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: triton-secret
+                  key: aws-secret-access-key
+            - name: AWS_DEFAULT_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: triton-secret
+                  key: aws-default-region
+
           resources:
             limits:
               nvidia.com/gpu: {{ .Values.image.numGpus }}
@@ -81,6 +98,7 @@ spec:
               path: /v2/health/ready
               port: http
 
+
           volumeMounts:
           - mountPath: /dev/shm
             name: shmdir
@@ -88,3 +106,4 @@ spec:
         - name: shmdir
           emptyDir:
             medium: Memory
+     

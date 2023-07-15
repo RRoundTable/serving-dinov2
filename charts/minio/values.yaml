@@ -5,6 +5,8 @@ minio:
   service:
     type: LoadBalancer
     port: 9000
+  accessKey: "serving-dinov2"
+  secretKey: "serving-dinov2"
 
   ## Create multiple buckets after minio install
   ## Enabling `defaultBucket` will take priority over this list

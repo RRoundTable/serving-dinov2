@@ -1,3 +1,5 @@
+PROFILE_NAME=serving-dinov2
+
 
 model:
 	git lfs install
@@ -8,3 +10,8 @@ model:
 minikube:
 	curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 	sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+
+cluster:
+	minikube start driver=docker --profile=$(PROFILE_NAME)
+	eval $(minikube docker-env) # for using host docker images

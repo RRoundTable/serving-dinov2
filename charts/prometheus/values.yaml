@@ -23,3 +23,11 @@ kube-prometheus-stack:
       ingressClassName: ""
       annotations: {}
       labels: {}
+    service:
+      enabled: true
+      type: LoadBalancer
+      port: 3000
+      targetPort: 3000 
+      annotations: {}
+      labels: {}
+      portName: http 

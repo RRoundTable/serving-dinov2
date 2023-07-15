@@ -14,6 +14,7 @@ cluster:
 	helm repo add traefik https://helm.traefik.io/traefik
 	helm repo add grafana https://grafana.github.io/helm-charts
 	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	helm repo add minio https://helm.min.io/
 	helm repo update
 
 finalize:
@@ -23,6 +24,7 @@ finalize:
 .PHONY: charts
 charts:
 	helm install traefik charts/traefik
+	helm install minio charts/minio
 	helm install loki charts/loki
 	helm install promtail charts/promtail
 	helm install prometheus charts/prometheus
@@ -35,4 +37,5 @@ remove-charts:
 	helm uninstall prometheus || true
 	helm uninstall promtail || true
 	helm uninstall loki || true
+	helm uninstall minio || true
 	helm uninstall traefik || true

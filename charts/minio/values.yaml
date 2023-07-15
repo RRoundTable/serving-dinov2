@@ -1,0 +1,15 @@
+# see for more details:
+# https://github.com/minio/minio/blob/master/helm/minio/values.yaml
+
+minio:
+  service:
+    type: LoadBalancer
+    port: 9000
+
+  ## Create multiple buckets after minio install
+  ## Enabling `defaultBucket` will take priority over this list
+  ##
+  buckets:
+    - name: model-repository 
+      policy: none
+      puge: false

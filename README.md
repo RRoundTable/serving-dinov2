@@ -17,4 +17,5 @@ Check [docker-compose](docs/docker-compose.md)
 
 ## Kubernetes
 
+![image](https://github.com/RRoundTable/serving-dinov2/assets/27891090/02d1e30b-b169-4d2e-bba0-8c9481397007)
 Check [Kubernetes](docs/k8s.md)

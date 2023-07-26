@@ -12,7 +12,7 @@ services:
     # restart: always
 
   dinov2-server:
-    image: ghcr.io/rroundtable/dinov2-server-triton:23.04-py3
+    image: ghcr.io/rroundtable/dinov2-server-triton:23.06-py3
     container_name: dinov2-server
     command: tritonserver --model-repository=/models
     volumes:

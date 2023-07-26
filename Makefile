@@ -1,9 +1,10 @@
+MODEL=dinov2_vitl14_trt_a4000
 
 model:
 	git lfs install
-	git clone git@hf.co:RoundtTble/dinov2_vitl14_onnx
-	cp -r dinov2_vitl14_onnx/model_repository ./model_repository
-	rm -rf dinov2_vitl14_onnx
+	git clone git@hf.co:RoundtTble/$(MODEL)
+	cp -r $(MODEL)/model_repository ./model_repository
+	rm -rf $(MODEL)
 
 cluster:
 	curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.27.2+k3s1" K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="server --disable=traefik" sh -s - --docker

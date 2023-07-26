@@ -7,7 +7,7 @@
 - [x] Docker Compose.
 - [x] K8s Setting(Triton, Traefik, Promtail, Loki, Prometheus, Grafana).
 - [x] Serving dinov2 TensorRT Model. ([Artifact](https://huggingface.co/RoundtTble/dinov2_trt_a4000) `throughput: 222.66 infer/sec`)
-- [ ] ~Serving dinov2 onnx model with Fastertransformer~([fastertransformer_backend](https://github.com/triton-inference-server/fastertransformer_backend) don't support vit yet.)
+- [ ] ~~Serving dinov2 onnx model with Fastertransformer~~ ([fastertransformer_backend](https://github.com/triton-inference-server/fastertransformer_backend) don't support vit yet.)
 
 ## Docker Compose
 

@@ -2,14 +2,12 @@
 
 ## Contents
 
-- [x] Serving dinov2 onnx model with triton. ([Artifact](https://huggingface.co/RoundtTble/dinov2_vits14_onnx))
-- [ ] Golang API Code for dinov2. (Not Determined)
+- [x] Serving dinov2 onnx model with triton. ([Artifact](https://huggingface.co/RoundtTble/dinov2_vitl14_trt_a4000))
 - [x] Gradio Demo.
 - [x] Docker Compose.
 - [x] K8s Setting(Triton, Traefik, Promtail, Loki, Prometheus, Grafana).
 - [ ] Serving dinov2 onnx model with TensorRT.
-- [ ] Serving dinov2 onnx model with Fastertransformer.
-- [ ] CI/CD with github actions.
+- [ ] ~Serving dinov2 onnx model with Fastertransformer~([fastertransformer_backend](https://github.com/triton-inference-server/fastertransformer_backend) don't support vit yet.)
 
 ## Docker Compose
 
